@@ -2,7 +2,7 @@
 
 A robust FastAPI-based backend service for the Legal Intelligence Dashboard. This service provides AI-powered document analysis, risk assessment, compliance checking, and comprehensive data management for legal professionals.
 
-## 🚀 Features
+## Features
 
 ### Core Services
 - **Document Processing**: Extract text from PDF, DOCX, DOC, and TXT files
@@ -36,7 +36,7 @@ A robust FastAPI-based backend service for the Legal Intelligence Dashboard. Thi
 - **Testing**: Pytest
 - **Deployment**: Uvicorn ASGI server
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 backend/
@@ -73,10 +73,10 @@ backend/
 └── README.md                # This file
 ```
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
-- Python 3.9 or higher
+- Python 3
 - pip (Python package manager)
 - Virtual environment (recommended)
 
@@ -129,7 +129,7 @@ backend/
 - `pytest -v` - Run tests with verbose output
 - `pytest --cov=app` - Run tests with coverage
 
-## 🔧 Configuration
+## Configuration
 
 ### Environment Variables
 - `SECRET_KEY`: JWT signing secret
@@ -149,7 +149,7 @@ The application uses SQLite by default for development. For production, consider
 - Cloud storage (AWS S3, Google Cloud Storage)
 - Distributed file systems
 
-## 📚 API Documentation
+## API Documentation
 
 ### Authentication
 All protected endpoints require a valid JWT token in the Authorization header:
@@ -196,7 +196,7 @@ curl -X POST "http://localhost:8000/query" \
   -d '{"question": "Show me high-risk contracts"}'
 ```
 
-## 🔐 Security Features
+## Security Features
 
 - **JWT Authentication**: Secure token-based authentication
 - **Password Hashing**: Bcrypt password encryption
@@ -205,7 +205,7 @@ curl -X POST "http://localhost:8000/query" \
 - **Rate Limiting**: API request throttling
 - **File Validation**: Secure file upload handling
 
-## 📊 AI Analysis Engine
+## AI Analysis Engine
 
 ### Risk Assessment
 The AI analyzer uses pattern matching to assess document risk levels:
@@ -225,29 +225,6 @@ Quality assessment of extracted data:
 - **Medium (41-70%)**: Acceptable quality
 - **High (71-95%)**: High quality, reliable data
 
-## 🧪 Testing
-
-### Running Tests
-```bash
-# Install test dependencies
-pip install pytest pytest-asyncio pytest-cov
-
-# Run all tests
-pytest
-
-# Run with coverage
-pytest --cov=app --cov-report=html
-
-# Run specific test file
-pytest tests/test_ai_analyzer.py
-```
-
-### Test Structure
-- **Unit Tests**: Individual function testing
-- **Integration Tests**: API endpoint testing
-- **Mock Tests**: External service mocking
-
-## 🚀 Deployment
 
 ### Development
 ```bash
@@ -277,7 +254,7 @@ docker run -p 8000:8000 legal-dashboard-backend
 - **Staging**: PostgreSQL, production-like settings
 - **Production**: Optimized database, minimal logging, monitoring
 
-## 📈 Performance Optimization
+## Performance Optimization
 
 ### Database Optimization
 - Proper indexing on frequently queried fields
@@ -294,8 +271,6 @@ docker run -p 8000:8000 legal-dashboard-backend
 - Pagination for large datasets
 - Efficient data serialization
 
-## 🔍 Monitoring and Logging
-
 ### Logging Configuration
 - Structured logging with JSON format
 - Log levels: DEBUG, INFO, WARNING, ERROR, CRITICAL
@@ -311,7 +286,7 @@ docker run -p 8000:8000 legal-dashboard-backend
 - Error rates and types
 - Resource usage monitoring
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
@@ -319,30 +294,3 @@ docker run -p 8000:8000 legal-dashboard-backend
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-### Development Guidelines
-- Follow PEP 8 style guidelines
-- Write comprehensive tests for new features
-- Update documentation for API changes
-- Use type hints throughout the codebase
-
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🆘 Support
-
-For support and questions:
-- Check the [Issues](../../issues) page
-- Review the API documentation at `/docs`
-- Contact the development team
-
-## 🔄 Version History
-
-- **v1.0.0** - Initial release with basic document processing
-- **v1.1.0** - Added AI analysis and risk assessment
-- **v1.2.0** - Enhanced export capabilities and query interface
-- **v1.3.0** - Improved performance and error handling
-
----
-
-**Built with ❤️ for the legal community**
