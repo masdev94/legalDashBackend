@@ -11,21 +11,22 @@ from app.services.file_storage import FileStorage
 from app.services.ai_analyzer import AIAnalyzer
 from app.services.query_service import QueryService
 from app.models.document import Document, DocumentMetadata
-from app.core.config import settings
+from app.core.config import API_TITLE, API_VERSION, DEBUG, HOST, PORT, ALLOWED_ORIGINS
 from app.core.logging import setup_logging
 from loguru import logger
 
 setup_logging()
 
 app = FastAPI(
-    title="Legal AI Platform",
+    title=API_TITLE,
     description="AI-powered legal document analysis and querying platform",
-    version="1.0.0"
+    version=API_VERSION,
+    debug=DEBUG
 )
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -52,9 +53,9 @@ if __name__ == "__main__":
     import uvicorn
     uvicorn.run(
         "main:app",
-        host="0.0.0.0",
-        port=8000,
-        reload=True,
-        log_level="info"
+        host=HOST,
+        port=PORT,
+        reload=DEBUG,
+        log_level="info" if not DEBUG else "debug"
     )
 

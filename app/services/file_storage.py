@@ -3,13 +3,13 @@ import uuid
 from pathlib import Path
 from typing import Optional, Tuple, List, Dict, Any
 from loguru import logger
-from app.core.config import settings
+from app.core.config import UPLOAD_DIR
 from app.models.document import Document
 
 class FileStorage:
     
     def __init__(self):
-        self.uploads_dir = Path("uploads")
+        self.uploads_dir = Path(UPLOAD_DIR)
         self.uploads_dir.mkdir(exist_ok=True)
         # In-memory document storage (in production, this would be a database)
         self.documents: Dict[str, Document] = {}

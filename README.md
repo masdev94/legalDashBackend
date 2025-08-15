@@ -84,7 +84,7 @@ backend/
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/masdev94/legalDashBackend.git
    cd legalDash/backend
    ```
 
@@ -110,21 +110,14 @@ backend/
    SECRET_KEY=your-secret-key-here
    ALGORITHM=HS256
    ACCESS_TOKEN_EXPIRE_MINUTES=30
-   DATABASE_URL=sqlite:///./legal_dashboard.db
    UPLOAD_DIR=./uploads
    ```
-
-5. **Initialize database**
-   ```bash
-   python -c "from app.core.database import init_db; init_db()"
-   ```
-
-6. **Start the server**
+5. **Start the server**
    ```bash
    python main.py
    ```
 
-7. **Access the API**
+6. **Access the API**
    - API Base URL: `http://localhost:8000`
    - Interactive Docs: `http://localhost:8000/docs`
    - ReDoc: `http://localhost:8000/redoc`

@@ -16,7 +16,7 @@ from app.services.document_processor import DocumentProcessor
 from app.services.query_service import QueryService
 from app.services.ai_analyzer import AIAnalyzer
 from app.services.file_storage import FileStorage
-from app.core.config import settings
+from app.core.config import ALLOWED_FILE_TYPES, MAX_FILE_SIZE, MAX_DOCUMENT_SIZE
 
 router = APIRouter()
 
@@ -36,23 +36,20 @@ async def upload_documents(files: List[UploadFile] = File(...)):
         
         for file in files:
             try:
-                if not any(file.filename.lower().endswith(ext) for ext in settings.allowed_file_types):
+                if not any(file.filename.lower().endswith(ext) for ext in ALLOWED_FILE_TYPES):
                     failed_files.append(f"{file.filename} (unsupported file type)")
                     continue
                 
-                if file.size > settings.max_file_size:
+                if file.size > MAX_FILE_SIZE:
                     failed_files.append(f"{file.filename} (file too large)")
                     continue
                 
                 file_content = await file.read()
                 
-                # Process document and generate fresh AI insights
                 document = document_processor.process_document(file.filename, file_content)
                 
-                # Generate fresh AI insights (no history)
                 enhanced_document = await ai_analyzer.enhance_document(document)
                 
-                # Store document in file storage and query service
                 file_storage.store_document(enhanced_document)
                 query_service.add_documents([enhanced_document])
                 
@@ -97,7 +94,7 @@ async def upload_folder(zip_file: UploadFile = File(...)):
             
             supported_files = [
                 f for f in file_list 
-                if any(f.lower().endswith(ext) for ext in settings.allowed_file_types)
+                if any(f.lower().endswith(ext) for ext in ALLOWED_FILE_TYPES)
                 and not f.endswith('/')
             ]
             
@@ -107,13 +104,10 @@ async def upload_folder(zip_file: UploadFile = File(...)):
                 try:
                     file_content = zip_ref.read(filename)
                     
-                    # Process document and generate fresh AI insights
                     document = document_processor.process_document(filename, file_content)
                     
-                    # Generate fresh AI insights (no history)
                     enhanced_document = await ai_analyzer.enhance_document(document)
                     
-                    # Store document in file storage and query service
                     file_storage.store_document(enhanced_document)
                     query_service.add_documents([enhanced_document])
                     
@@ -211,7 +205,6 @@ async def generate_ai_summary(data: dict):
     try:
         logger.info(f"AI Summary request received with data: {data}")
         
-        # Generate AI summary based on dashboard data
         summary = ai_analyzer.generate_ai_summary(data)
         logger.info(f"AI Summary generated: {summary}")
         
@@ -270,76 +263,12 @@ async def get_document_analysis(document_id: str):
         logger.error(f"Document analysis error: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Failed to analyze document: {str(e)}")
 
-@router.get("/documents/{document_id}/download")
-async def download_document(document_id: str):
-    try:
-        document = file_storage.get_document(document_id)
-        
-        if not document:
-            raise HTTPException(status_code=404, detail="Document not found")
-        
-        file_content = None
-        
-        if hasattr(document, 'raw_bytes') and document.raw_bytes:
-            file_content = document.raw_bytes
-            logger.info(f"Using raw bytes for download: {len(file_content)} bytes")
-        elif isinstance(document.content, bytes):
-            file_content = document.content
-            logger.info(f"Using content bytes for download: {len(file_content)} bytes")
-        elif isinstance(document.content, str):
-            if os.path.exists(document.content):
-                file_content = file_storage.get_file(document.content)
-                logger.info(f"Using file from disk: {len(file_content) if file_content else 0} bytes")
-            else:
-                raise HTTPException(status_code=404, detail="File not found on disk")
-        else:
-            raise HTTPException(status_code=404, detail="File content not available")
-        
-        if not file_content:
-            raise HTTPException(status_code=404, detail="File content could not be retrieved")
-        
-        from fastapi.responses import Response
-        import mimetypes
-        
-        filename = document.metadata.filename
-        content_type, _ = mimetypes.guess_type(filename)
-        
-        if not content_type:
-            if filename.lower().endswith('.pdf'):
-                content_type = "application/pdf"
-            elif filename.lower().endswith(('.doc', '.docx')):
-                content_type = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-            elif filename.lower().endswith('.txt'):
-                content_type = "text/plain"
-            else:
-                content_type = "application/octet-stream"
-        
-        response = Response(
-            content=file_content,
-            media_type=content_type,
-            headers={
-                "Content-Disposition": f"attachment; filename*=UTF-8''{filename}",
-                "Content-Length": str(len(file_content)),
-                "Cache-Control": "no-cache"
-            }
-        )
-        
-        logger.info(f"Downloading document: {filename} ({len(file_content)} bytes, type: {content_type})")
-        return response
-        
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Download document error: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Failed to download document: {str(e)}")
-
 @router.delete("/documents/{document_id}")
 async def delete_document(document_id: str):
     try:
         success = file_storage.delete_document(document_id)
         
         if success:
-            # Also remove from query service
             query_service.remove_document(document_id)
             logger.info(f"Document {document_id} deleted successfully")
             return {"message": "Document deleted successfully"}
@@ -355,15 +284,12 @@ async def delete_document(document_id: str):
 @router.post("/documents/{document_id}/regenerate-ai")
 async def regenerate_document_ai(document_id: str):
     try:
-        # Get the document from storage
         document = file_storage.get_document(document_id)
         if not document:
             raise HTTPException(status_code=404, detail="Document not found")
         
-        # Generate completely fresh AI insights (no history)
         enhanced_document = await ai_analyzer.enhance_document(document)
         
-        # Update the document in storage with fresh insights
         file_storage.store_document(enhanced_document)
         query_service.add_documents([enhanced_document])
         

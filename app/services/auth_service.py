@@ -4,15 +4,16 @@ from typing import Optional, Dict, Any
 from passlib.context import CryptContext
 from loguru import logger
 from app.models.auth import UserCreate, UserResponse, TokenData
+from app.core.config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
 import uuid
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 class AuthService:
     def __init__(self):
-        self.secret_key = "your-secret-key-change-in-production"
-        self.algorithm = "HS256"
-        self.access_token_expire_minutes = 30
+        self.secret_key = SECRET_KEY
+        self.algorithm = ALGORITHM
+        self.access_token_expire_minutes = ACCESS_TOKEN_EXPIRE_MINUTES
         
         self.mock_users = {
             "admin@legal.com": {
